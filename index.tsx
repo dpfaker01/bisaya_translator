@@ -43,8 +43,15 @@ const App = () => {
     localStorage.setItem('customTranslations', JSON.stringify(customTranslations));
   }, [customTranslations]);
 
-
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // =================================================================
+  // FIX 1: HARDCODED API KEY
+  // GitHub Pages cannot read .env files. We must place the key here.
+  // Make sure you restricted this key to your website URL in Google Cloud.
+  // =================================================================
+  const API_KEY = "AIzaSyCJPOlIdx3cZvu1DE5cXw7BLGReiPAVf3w";
+  
+  // Initialize the AI SDK
+  const ai = new GoogleGenAI({ apiKey: API_KEY });
 
   const fileToGenerativePart = async (file: File) => {
     const base64EncodedDataPromise = new Promise<string>((resolve) => {
@@ -82,7 +89,10 @@ const App = () => {
     try {
       const imagePart = await fileToGenerativePart(imageFile);
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        // FIX 2: Use a STABLE model version
+        // 'gemini-2.5-flash' does not exist publicly.
+        // 'gemini-1.5-flash' is the correct stable version.
+        model: 'gemini-1.5-flash',
         contents: {
           parts: [
             { text: 'Extract all the English words from this image. If no text is found, return an empty response.' },
@@ -90,8 +100,10 @@ const App = () => {
           ]
         },
       });
-      setSourceText(response.text);
+      // FIX 3: Add fallback for empty text
+      setSourceText(response.text || "");
     } catch (err) {
+      console.error("Extraction Error:", err);
       setError(
         err instanceof Error ? err.message : 'An unknown error occurred during text extraction.'
       );
@@ -121,13 +133,15 @@ const App = () => {
       }
       
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        // FIX 2: Use stable model version
+        model: 'gemini-1.5-flash',
         contents: {
           parts: [{ text: prompt }]
         },
       });
-      setTranslatedText(response.text);
+      setTranslatedText(response.text || "");
     } catch (err)      {
+      console.error("Translation Error:", err);
       setError(
         err instanceof Error ? err.message : 'An unknown error occurred during translation.'
       );
@@ -158,7 +172,8 @@ const App = () => {
 
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        // FIX 2: Use stable model version
+        model: 'gemini-1.5-flash',
         contents: { parts: [{ text: prompt }] },
         config: {
           responseMimeType: "application/json",
@@ -166,11 +181,12 @@ const App = () => {
         },
       });
       
-      const parsedTranslations = JSON.parse(response.text);
+      const responseString = response.text || "[]";
+      const parsedTranslations = JSON.parse(responseString);
 
       if (Array.isArray(parsedTranslations)) {
         // Basic validation of content
-        const validTranslations = parsedTranslations.filter(t => t.english && t.bisaya);
+        const validTranslations = parsedTranslations.filter((t: any) => t.english && t.bisaya);
         setCustomTranslations(prev => [...prev, ...validTranslations]);
         setBulkTranslations('');
       } else {
@@ -178,6 +194,7 @@ const App = () => {
       }
 
     } catch (err) {
+      console.error("Bulk Add Error:", err);
       setError(
         err instanceof Error ? err.message : 'An unknown error occurred while adding custom translations.'
       );
