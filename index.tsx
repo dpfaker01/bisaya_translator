@@ -48,7 +48,7 @@ const App = () => {
   // GitHub Pages cannot read .env files. We must place the key here.
   // Make sure you restricted this key to your website URL in Google Cloud.
   // =================================================================
-  const API_KEY = "AIzaSyCJPOlIdx3cZvu1DE5cXw7BLGReiPAVf3w";
+  const API_KEY = "AIzaSyAnYgLFXjGQLI4SYsBNvVqVxI9YbpjhUEU";
   
   // Initialize the AI SDK
   const ai = new GoogleGenAI({ apiKey: API_KEY });
