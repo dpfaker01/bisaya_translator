@@ -134,7 +134,7 @@ const App = () => {
       
       const response = await ai.models.generateContent({
         // FIX 2: Use stable model version
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3.0-flash',
         contents: {
           parts: [{ text: prompt }]
         },
@@ -173,7 +173,7 @@ const App = () => {
     try {
       const response = await ai.models.generateContent({
         // FIX 2: Use stable model version
-        model: 'gemini-1.5-flash',
+        model: 'gemini-3.0-flash',
         contents: { parts: [{ text: prompt }] },
         config: {
           responseMimeType: "application/json",
