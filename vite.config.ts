@@ -3,8 +3,11 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  // IMPORTANT: Make sure this matches your repository name exactly
-  base: "/bisaya_translator/", 
+  base: '/bisaya_translator/',  // This matches your repo name exactly
+  build: {
+    outDir: 'dist',  // Explicit output directory
+    emptyOutDir: true,
+  },
   server: {
     port: 3000,
     host: '0.0.0.0',
